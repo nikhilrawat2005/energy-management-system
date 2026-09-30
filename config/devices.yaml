@@ -1,0 +1,54 @@
+energy_meter:
+  port: "COM3"
+  baud: 9600
+  slave: 1
+  registers:
+    voltage: {addr: 0, type: float32, unit: "V", min: 180, max: 280}
+    current: {addr: 6, type: float32, unit: "A", min: 0, max: 100}
+    power_kw: {addr: 12, type: float32, unit: "kW", min: 0, max: 50}
+    pf: {addr: 30, type: float32, unit: "", min: -1.0, max: 1.0}
+    freq: {addr: 70, type: float32, unit: "Hz", min: 45, max: 55}
+    energy_kwh: {addr: 342, type: float32, unit: "kWh", min: 0}
+
+grid_smart_meter:
+  port: "COM3"
+  baud: 9600
+  slave: 2
+  registers:
+    voltage: {addr: 0, type: float32, unit: "V", min: 180, max: 280}
+    current: {addr: 6, type: float32, unit: "A", min: 0, max: 150}
+    power_kw: {addr: 12, type: float32, unit: "kW", min: -100, max: 100}
+    pf: {addr: 30, type: float32, unit: "", min: -1.0, max: 1.0}
+    freq: {addr: 70, type: float32, unit: "Hz", min: 45, max: 55}
+    energy_kwh: {addr: 342, type: float32, unit: "kWh", min: 0}
+    grid_status: {addr: 500, type: uint16, unit: "ON/OFF", min: 0, max: 1}
+
+solar_inverter:
+  port: "COM4"
+  baud: 9600
+  slave: 3
+  registers:
+    power_kw: {addr: 3005, type: uint32, scale: 0.001, unit: "kW", min: 0, max: 25}
+    voltage: {addr: 3001, type: float32, unit: "V", min: 0, max: 600}
+    current: {addr: 3003, type: float32, unit: "A", min: 0, max: 50}
+    daily_yield_kwh: {addr: 3010, type: float32, unit: "kWh", min: 0}
+
+bms:
+  port: "COM5"
+  baud: 19200
+  slave: 4
+  registers:
+    soc: {addr: 100, type: float32, scale: 1.0, unit: "%", min: 0, max: 100}
+    voltage: {addr: 102, type: float32, unit: "V", min: 40, max: 60}
+    current: {addr: 104, type: float32, unit: "A", min: -100, max: 100}
+    temp_c: {addr: 106, type: float32, unit: "C", min: -10, max: 70}
+
+analog_sensors:
+  esp32_mqtt_topic: "maems/esp32/sensors"
+  metrics:
+    pyranometer_irradiance: {unit: "W/m2", min: 0, max: 1500}
+    anemometer_wind_speed: {unit: "m/s", min: 0, max: 50}
+    dht22_ambient_temp: {unit: "C", min: -10, max: 60}
+    dht22_humidity: {unit: "%RH", min: 0, max: 100}
+    ntc_battery_temp: {unit: "C", min: -10, max: 80}
+    pt100_temp: {unit: "C", min: -20, max: 100}

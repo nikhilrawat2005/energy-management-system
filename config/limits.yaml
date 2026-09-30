@@ -1,0 +1,35 @@
+battery:
+  capacity_kwh: 15.0
+  max_charge_kw: 5.0
+  max_discharge_kw: 5.0
+  soc_min: 0.10          # 10% safety reserve
+  soc_max: 0.95          # 95% overcharge prevention
+  temp_max_c: 45.0       # Thermal throttling trigger
+  temp_critical_c: 55.0  # Immediate shutdown trigger
+  efficiency: 0.95
+
+grid:
+  voltage_nominal: 230.0
+  voltage_tolerance_pct: 10.0  # 207V to 253V
+  freq_nominal: 50.0
+  freq_tolerance_hz: 1.5       # 48.5Hz to 51.5Hz
+  max_import_kw: 25.0
+
+safety:
+  rate_limit_seconds: 900      # 15 minutes relay guard
+  island_mode_on_grid_loss: true
+  shed_non_critical_load_on_island: true
+  blackout_penalty: 50.0
+  battery_wear_cost_per_kwh: 0.02
+
+tariff:
+  currency: "INR"
+  off_peak:
+    hours: [0, 1, 2, 3, 4, 5, 22, 23]
+    rate_per_kwh: 4.5
+  normal:
+    hours: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+    rate_per_kwh: 7.0
+  peak:
+    hours: [18, 19, 20, 21]
+    rate_per_kwh: 11.5
