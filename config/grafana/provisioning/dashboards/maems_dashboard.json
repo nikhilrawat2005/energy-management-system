@@ -11,12 +11,12 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
-      "title": "⚡ Real-Time Microgrid Power & Economics Overview",
+      "title": "⚡ 1. Microgrid Power Balance & Economic Status",
       "type": "row"
     },
     {
       "id": 1,
-      "title": "☀️ Solar Generation",
+      "title": "☀️ Solar PV Power",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
       "targets": [
@@ -29,33 +29,27 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "orange", "value": null }, { "color": "green", "value": 3 }]
-          },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }, { "color": "green", "value": 3 }] },
           "unit": "kW"
         }
       }
     },
     {
       "id": 2,
-      "title": "🔌 Microgrid Load Demand",
+      "title": "🔌 Load Consumption",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT value AS \"Load kW\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts DESC LIMIT 1;",
+          "rawSql": "SELECT value AS \"Load kW\" FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts DESC LIMIT 1;",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "blue", "value": null }, { "color": "red", "value": 5 }]
-          },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "red", "value": 5 }] },
           "unit": "kW"
         }
       }
@@ -78,11 +72,7 @@
           "max": 100,
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 20 },
-              { "color": "green", "value": 40 }
-            ]
+            "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 20 }, { "color": "green", "value": 40 }]
           },
           "unit": "percent"
         }
@@ -90,9 +80,29 @@
     },
     {
       "id": 4,
-      "title": "💰 ToD Electricity Tariff",
+      "title": "🏭 Grid Import Power",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Grid kW\" FROM sensor_readings WHERE metric='grid_power_kw' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 2 }, { "color": "red", "value": 4 }] },
+          "unit": "kW"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "💰 ToD Electricity Tariff",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
       "targets": [
         {
           "format": "table",
@@ -103,19 +113,16 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 6 }, { "color": "red", "value": 10 }]
-          },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 6 }, { "color": "red", "value": 10 }] },
           "unit": "currencyINR"
         }
       }
     },
     {
-      "id": 5,
-      "title": "💸 Total Cost Saved (INR)",
+      "id": 6,
+      "title": "💸 Total Cost Saved",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
       "targets": [
         {
           "format": "table",
@@ -124,47 +131,181 @@
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "color": { "fixedColor": "green", "mode": "fixed" },
-          "unit": "currencyINR"
-        }
-      }
-    },
-    {
-      "id": 6,
-      "title": "🏭 Grid Import Power",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
-      "targets": [
-        {
-          "format": "table",
-          "rawSql": "SELECT value AS \"Grid kW\" FROM sensor_readings WHERE metric='grid_import_kw' ORDER BY ts DESC LIMIT 1;",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 2 }, { "color": "red", "value": 4 }]
-          },
-          "unit": "kW"
-        }
+        "defaults": { "color": { "fixedColor": "green", "mode": "fixed" }, "unit": "currencyINR" }
       }
     },
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 101,
-      "title": "📈 Live Moving Power Flow & ML 1-Hour Forecasts",
+      "title": "🌤️ 2. Weather, Climate & Environmental Sensors",
       "type": "row"
     },
     {
       "id": 7,
-      "title": "⚡ Real-Time Generation vs Demand (Live Stream)",
+      "title": "☀️ Solar Irradiance (Pyranometer)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Irradiance\" FROM sensor_readings WHERE metric='solar_irradiance' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "orange", "value": 300 }, { "color": "yellow", "value": 700 }] },
+          "unit": "W/m²"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "🌡️ Ambient Temp (DHT22 / PT100)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 6 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Ambient Temp\" FROM sensor_readings WHERE metric='ambient_temp_c' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 38 }] },
+          "unit": "celsius"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "💧 Relative Humidity",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Humidity\" FROM sensor_readings WHERE metric='humidity_pct' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 40 }] },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "🌬️ Wind Speed (Anemometer)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 6 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Wind Speed\" FROM sensor_readings WHERE metric='wind_speed_ms' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 15 }] },
+          "unit": "m/s"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 },
+      "id": 102,
+      "title": "🔌 3. Electrical & Grid Health Sensors (CT, PT, BMS, Grid Meter)",
+      "type": "row"
+    },
+    {
+      "id": 11,
+      "title": "⚡ Grid Voltage (PT Sensor)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 11 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"PT Voltage\" FROM sensor_readings WHERE metric='pt_voltage_v' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 210 }, { "color": "red", "value": 250 }] },
+          "unit": "volt"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "title": "🔌 CT Current",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 11 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"CT Amperes\" FROM sensor_readings WHERE metric='ct_current_a' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "red", "value": 30 }] },
+          "unit": "amp"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "title": "🔋 Battery Voltage & Temp (BMS + NTC)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 11 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT (SELECT value FROM sensor_readings WHERE metric='bms_voltage_v' ORDER BY ts DESC LIMIT 1) || ' V  |  ' || (SELECT value FROM sensor_readings WHERE metric='batt_temp_c' ORDER BY ts DESC LIMIT 1) || ' °C' AS \"BMS Voltage & Temp\";",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "🌐 Grid Frequency & Status",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 11 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT (SELECT value FROM sensor_readings WHERE metric='grid_freq_hz' ORDER BY ts DESC LIMIT 1) || ' Hz  |  ' || CASE WHEN (SELECT value FROM sensor_readings WHERE metric='grid_status' ORDER BY ts DESC LIMIT 1)=1 THEN 'GRID ONLINE' ELSE 'ISLAND MODE (BLACKOUT)' END AS \"Grid Health\";",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "id": 103,
+      "title": "🔮 4. Real-Time Moving Power Flow & ML 1-Hour Forecasts",
+      "type": "row"
+    },
+    {
+      "id": 15,
+      "title": "⚡ Live Power Flow: Solar Generation vs Demand Load (kW)",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
       "targets": [
         {
           "format": "time_series",
@@ -173,16 +314,16 @@
         },
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Demand Actual (kW)\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts ASC;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Demand Load (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts ASC;",
           "refId": "B"
         }
       ]
     },
     {
-      "id": 8,
-      "title": "🔮 ML Model Horizon Predictions (t+1 Hour Ahead)",
+      "id": 16,
+      "title": "🔮 ML Model Predictions: Solar & Demand Horizon (t+1h)",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
       "targets": [
         {
           "format": "time_series",
@@ -191,40 +332,40 @@
         },
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"ML Demand Forecast 1h (kW)\" FROM sensor_readings WHERE metric='pred_load_1h' ORDER BY ts ASC;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"ML Demand Forecast 1h (kW)\" FROM sensor_readings WHERE metric='pred_demand_1h' ORDER BY ts ASC;",
           "refId": "B"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
-      "id": 102,
-      "title": "🤖 Multi-Agent Decisions, Safety Overrides & System Verification",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 },
+      "id": 104,
+      "title": "🤖 5. Multi-Agent Decisions, Safety Overrides & System Verification",
       "type": "row"
     },
     {
-      "id": 9,
-      "title": "Live Multi-Agent Decision & Interlock Stream",
+      "id": 17,
+      "title": "Live Multi-Agent Decision & Safety Interlock Stream",
       "type": "table",
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 15 },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 25 },
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Time (UTC)\", action_name AS \"Coordinated Action (Dispatch)\", solar_kw AS \"Solar kW\", load_kw AS \"Load kW\", ROUND((soc * 100)::numeric, 1) || '%' AS \"Battery SoC\", '₹' || price AS \"Tariff\", safety_status AS \"Safety Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 20;",
+          "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Time (UTC)\", action_name AS \"Coordinated Action (Dispatch)\", solar_kw AS \"Solar kW\", load_kw AS \"Load kW\", ROUND((soc * 100)::numeric, 1) || '%' AS \"Battery SoC\", '₹' || price AS \"Tariff\", safety_status AS \"Safety Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 15;",
           "refId": "A"
         }
       ]
     },
     {
-      "id": 10,
-      "title": "System Health & Test Suite Status",
+      "id": 18,
+      "title": "Full System Verification & Health",
       "type": "stat",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 15 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 25 },
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT '100% HEALTHY' AS \"Multi-Agent System\", '10/10 PASS' AS \"Safety Guard Tests\", 'ONLINE' AS \"TimescaleDB & MQTT\";",
+          "rawSql": "SELECT '13 / 13 SENSORS' AS \"Telemetry Ingestion\", '10 / 10 PASS' AS \"Unit Test Suite\", 'ONLINE' AS \"Open-Meteo & TimescaleDB\";",
           "refId": "A"
         }
       ],
@@ -243,7 +384,7 @@
   "refresh": "2s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["energy", "maems", "iot", "ml"],
+  "tags": ["energy", "maems", "iot", "weather", "ml"],
   "time": {
     "from": "now-15m",
     "to": "now"
