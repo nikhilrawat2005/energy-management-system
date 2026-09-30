@@ -1,97 +1,482 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      },
+      {
+        "datasource": "timescale",
+        "enable": true,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "name": "Safety Overrides",
+        "showIn": 0,
+        "tags": [
+          "SAFETY",
+          "OVERRIDE"
+        ],
+        "target": {
+          "format": "table",
+          "rawSql": "SELECT ts AS time, safety_status AS text, 'Safety override: ' || safety_status AS tags FROM agent_decisions WHERE safety_override = true AND $__timeFilter(ts) ORDER BY ts ASC;"
+        },
+        "type": "query"
+      }
+    ]
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
   "id": null,
   "links": [
-    { "title": "🌤️ Weather & Forecasts Page", "url": "/d/maems_weather_v1/maems-weather-forecasting", "type": "link", "targetBlank": false },
-    { "title": "🔋 Battery & Grid Health Page", "url": "/d/maems_battery_grid_v1/maems-battery-grid-diagnostics", "type": "link", "targetBlank": false },
-    { "title": "🤖 Multi-Agent Decisions Page", "url": "/d/maems_agents_v1/maems-multi-agent-audit", "type": "link", "targetBlank": false }
+    {
+      "title": "\ud83c\udf24\ufe0f Weather & Forecasts Page",
+      "url": "http://localhost:3001/d/maems_weather_v1/2-maems-weather-and-forecasting-intelligence",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    },
+    {
+      "title": "\ud83d\udd0b Battery & Grid Health Page",
+      "url": "http://localhost:3001/d/maems_battery_grid_v1/3-maems-battery-and-grid-diagnostics",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    },
+    {
+      "title": "\ud83e\udd16 Multi-Agent Decisions Page",
+      "url": "http://localhost:3001/d/maems_agents_v1/4-maems-multi-agent-decisions-and-safety-audit",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    }
   ],
   "liveNow": true,
   "panels": [
     {
+      "id": 999,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "html",
+        "content": "<div style=\"display: flex; align-items: center; background: #0d1117; padding: 10px 14px; border-radius: 8px; border: 1px solid #30363d; width: 100%; box-sizing: border-box;\"><a href=\"/d/maems_dashboard_v1/1-maems-executive-microgrid-overview\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #1f6feb; border: 1px solid #388bfd; border-radius: 6px; color: #ffffff; font-weight: bold; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\u26a1 1. Microgrid Overview</a><a href=\"/d/maems_weather_v1/2-maems-weather-and-forecasting-intelligence\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83c\udf24\ufe0f 2. Weather & Forecasts</a><a href=\"/d/maems_battery_grid_v1/3-maems-battery-and-grid-diagnostics\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83d\udd0b 3. Battery & Grid Diagnostics</a><a href=\"/d/maems_agents_v1/4-maems-multi-agent-decisions-and-safety-audit\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83e\udd16 4. Multi-Agent Decisions</a></div>"
+      },
+      "transparent": true
+    },
+    {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
       "id": 100,
-      "title": "⚡ Microgrid Real-Time Overview & Economics",
+      "title": "\u26a1 Microgrid Real-Time Overview & Economics",
       "type": "row"
     },
     {
+      "datasource": "timescale",
       "id": 1,
-      "title": "☀️ Solar Generation",
+      "title": "\u2600\ufe0f Solar Generation",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }, { "color": "green", "value": 3 }] }, "unit": "kW" } }
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 3
+      },
+      "description": "Instantaneous PV AC output from the solar inverter",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "kW",
+          "decimals": 2,
+          "noValue": "No data"
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
     },
     {
+      "datasource": "timescale",
       "id": 2,
-      "title": "🔌 Microgrid Demand Load",
+      "title": "\ud83d\udd0c Microgrid Demand Load",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Load kW\" FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "red", "value": 5 }] }, "unit": "kW" } }
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 3
+      },
+      "description": "Total site load from the main smart energy meter",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Load kW\" FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "kW",
+          "decimals": 2,
+          "noValue": "No data"
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
     },
     {
+      "datasource": "timescale",
       "id": 3,
-      "title": "🔋 Battery SoC",
+      "title": "\ud83d\udd0b Battery SoC",
       "type": "gauge",
-      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value * 100 AS \"SoC %\" FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 20 }, { "color": "green", "value": 40 }] }, "unit": "percent" } }
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 3
+      },
+      "description": "Battery state of charge (0-100%)",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"SoC %\" FROM sensor_readings WHERE metric='soc_pct' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "green",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "noValue": "No data"
+        }
+      }
     },
     {
+      "datasource": "timescale",
       "id": 4,
-      "title": "🏭 Grid Net Import",
+      "title": "\ud83c\udfed Grid Net Import",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Grid kW\" FROM sensor_readings WHERE metric='grid_power_kw' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 2 }, { "color": "red", "value": 4 }] }, "unit": "kW" } }
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 3
+      },
+      "description": "Net power drawn from (positive) or exported to (negative) the utility grid",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Grid kW\" FROM sensor_readings WHERE metric='grid_power_kw' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 4
+              }
+            ]
+          },
+          "unit": "kW",
+          "decimals": 2,
+          "noValue": "No data"
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
     },
     {
+      "datasource": "timescale",
       "id": 5,
-      "title": "💰 ToD Electricity Tariff",
+      "title": "\ud83d\udcb0 ToD Electricity Tariff",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Tariff\" FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 6 }, { "color": "red", "value": 10 }] }, "unit": "currencyINR" } }
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 3
+      },
+      "description": "Live time-of-day dynamic tariff",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Tariff\" FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 6
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "currencyINR",
+          "decimals": 2,
+          "noValue": "No data"
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
     },
     {
+      "datasource": "timescale",
       "id": 6,
-      "title": "💸 Cumulative Cost Savings",
+      "title": "\ud83d\udcb8 Cumulative Cost Savings",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Savings\" FROM sensor_readings WHERE metric='total_savings_inr' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" }, "unit": "currencyINR" } }
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 3
+      },
+      "description": "Total cost avoided vs grid-only operation since streamer start",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Savings\" FROM sensor_readings WHERE metric='total_savings_inr' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
+          "unit": "currencyINR",
+          "decimals": 2,
+          "noValue": "No data"
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
     },
     {
+      "datasource": "timescale",
       "id": 7,
-      "title": "⚡ Live Power Balance: Solar Generation vs Demand Consumption (kW)",
+      "title": "\u26a1 Live Power Balance: Solar vs Demand vs Grid (kW)",
       "type": "timeseries",
-      "gridPos": { "h": 10, "w": 16, "x": 0, "y": 5 },
+      "gridPos": {
+        "h": 10,
+        "w": 16,
+        "x": 0,
+        "y": 7
+      },
+      "description": "Real-time power flows: solar generation (green), site demand (blue), net grid import (orange). Positive grid = import, zero during islanding.",
       "targets": [
-        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Solar Generation (kW)\" FROM sensor_readings WHERE metric='solar_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "A" },
-        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Demand Consumption (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "B" },
-        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Grid Import (kW)\" FROM sensor_readings WHERE metric='grid_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "C" }
-      ]
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Solar Generation (kW)\" FROM sensor_readings WHERE metric='solar_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
+          "refId": "A"
+        },
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Demand Consumption (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
+          "refId": "B"
+        },
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Grid Import (kW)\" FROM sensor_readings WHERE metric='grid_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kW",
+          "decimals": 2,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "drawStyle": "line",
+            "spanNulls": true
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
     },
     {
+      "datasource": "timescale",
       "id": 8,
-      "title": "🤖 Real-Time Multi-Agent Dispatch Status",
+      "title": "\ud83e\udd16 Real-Time Multi-Agent Dispatch Status",
       "type": "table",
-      "gridPos": { "h": 10, "w": 8, "x": 16, "y": 5 },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 16,
+        "y": 7
+      },
+      "description": "Last 10 dispatcher decisions with safety status",
       "targets": [
-        { "format": "table", "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Time (UTC)\", action_name AS \"Coordinator Action\", safety_status AS \"Safety Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 10;", "refId": "A" }
-      ]
+        {
+          "format": "table",
+          "rawSql": "SELECT to_char(ts, 'YYYY-MM-DD HH24:MI:SS') AS \"Time (UTC)\", action_name AS \"Coordinator Action\", safety_status AS \"Safety Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 10;",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showHeader": true
+      }
     }
   ],
   "refresh": "2s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["maems", "overview", "energy"],
-  "time": { "from": "now-15m", "to": "now" },
+  "tags": [
+    "maems",
+    "overview",
+    "energy"
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
   "title": "1. MAEMS - Executive Microgrid Overview",
-  "uid": "maems_dashboard_v1"
+  "uid": "maems_dashboard_v1",
+  "weekStart": "Monday"
 }

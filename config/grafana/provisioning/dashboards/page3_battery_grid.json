@@ -1,109 +1,430 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
   "id": null,
   "links": [
-    { "title": "⚡ Microgrid Overview", "url": "/d/maems_dashboard_v1/1-maems-executive-microgrid-overview", "type": "link", "targetBlank": false },
-    { "title": "🌤️ Weather & Forecasts", "url": "/d/maems_weather_v1/maems-weather-forecasting", "type": "link", "targetBlank": false },
-    { "title": "🤖 Multi-Agent Decisions", "url": "/d/maems_agents_v1/maems-multi-agent-audit", "type": "link", "targetBlank": false }
+    {
+      "title": "\u26a1 Microgrid Overview",
+      "url": "http://localhost:3001/d/maems_dashboard_v1/1-maems-executive-microgrid-overview",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    },
+    {
+      "title": "\ud83c\udf24\ufe0f Weather & Forecasts Page",
+      "url": "http://localhost:3001/d/maems_weather_v1/2-maems-weather-and-forecasting-intelligence",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    },
+    {
+      "title": "\ud83e\udd16 Multi-Agent Decisions Page",
+      "url": "http://localhost:3001/d/maems_agents_v1/4-maems-multi-agent-decisions-and-safety-audit",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    }
   ],
   "liveNow": true,
   "panels": [
     {
+      "id": 999,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "html",
+        "content": "<div style=\"display: flex; align-items: center; background: #0d1117; padding: 10px 14px; border-radius: 8px; border: 1px solid #30363d; width: 100%; box-sizing: border-box;\"><a href=\"/d/maems_dashboard_v1/1-maems-executive-microgrid-overview\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\u26a1 1. Microgrid Overview</a><a href=\"/d/maems_weather_v1/2-maems-weather-and-forecasting-intelligence\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83c\udf24\ufe0f 2. Weather & Forecasts</a><a href=\"/d/maems_battery_grid_v1/3-maems-battery-and-grid-diagnostics\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #1f6feb; border: 1px solid #388bfd; border-radius: 6px; color: #ffffff; font-weight: bold; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83d\udd0b 3. Battery & Grid Diagnostics</a><a href=\"/d/maems_agents_v1/4-maems-multi-agent-decisions-and-safety-audit\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83e\udd16 4. Multi-Agent Decisions</a></div>"
+      },
+      "transparent": true
+    },
+    {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
       "id": 300,
-      "title": "🔋 Battery Storage System (BMS & NTC Thermistor Diagnostics)",
+      "title": "\ud83d\udd0b Battery Storage System (BMS & NTC Thermistor Diagnostics)",
       "type": "row"
     },
     {
       "id": 1,
       "title": "Battery State of Charge",
       "type": "gauge",
-      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value * 100 AS \"SoC %\" FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 20 }, { "color": "green", "value": 40 }] }, "unit": "percent" } }
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 3
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value * 100 AS \"SoC %\" FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "green",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "id": 2,
       "title": "BMS Battery Pack Voltage",
       "type": "stat",
-      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"BMS Voltage\" FROM sensor_readings WHERE metric='bms_voltage_v' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 46 }] }, "unit": "volt" } }
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 3
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"BMS Voltage\" FROM sensor_readings WHERE metric='bms_voltage_v' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 46
+              }
+            ]
+          },
+          "unit": "volt"
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "id": 3,
       "title": "BMS Power Flow (+Chg / -Dis)",
       "type": "stat",
-      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"BMS kW\" FROM sensor_readings WHERE metric='bms_power_kw' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 0.01 }] }, "unit": "kW" } }
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 3
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"BMS kW\" FROM sensor_readings WHERE metric='bms_power_kw' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.01
+              }
+            ]
+          },
+          "unit": "kW"
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "id": 4,
       "title": "Battery Thermal Sensor (NTC)",
       "type": "stat",
-      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"NTC Temp\" FROM sensor_readings WHERE metric='batt_temp_c' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 45 }, { "color": "red", "value": 55 }] }, "unit": "celsius" } }
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 3
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"NTC Temp\" FROM sensor_readings WHERE metric='batt_temp_c' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 45
+              },
+              {
+                "color": "red",
+                "value": 55
+              }
+            ]
+          },
+          "unit": "celsius"
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
       "id": 301,
-      "title": "🏭 Electrical Instrumentation & Substation Grid Health",
+      "title": "\ud83c\udfed Electrical Instrumentation & Substation Grid Health",
       "type": "row"
     },
     {
       "id": 5,
       "title": "PT AC Voltage (V)",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 7 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"PT Voltage\" FROM sensor_readings WHERE metric='pt_voltage_v' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 210 }, { "color": "red", "value": 250 }] }, "unit": "volt" } }
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 9
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"PT Voltage\" FROM sensor_readings WHERE metric='pt_voltage_v' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 210
+              },
+              {
+                "color": "red",
+                "value": 250
+              }
+            ]
+          },
+          "unit": "volt"
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "id": 6,
       "title": "CT Load Current (A)",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 7 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"CT Amperes\" FROM sensor_readings WHERE metric='ct_current_a' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "red", "value": 25 }] }, "unit": "amp" } }
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 9
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"CT Amperes\" FROM sensor_readings WHERE metric='ct_current_a' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "amp"
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "id": 7,
       "title": "Grid Frequency (Hz)",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 7 },
-      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Frequency\" FROM sensor_readings WHERE metric='grid_freq_hz' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 49.5 }, { "color": "red", "value": 50.5 }] }, "unit": "hertz" } }
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 9
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT value AS \"Frequency\" FROM sensor_readings WHERE metric='grid_freq_hz' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 49.5
+              },
+              {
+                "color": "red",
+                "value": 50.5
+              }
+            ]
+          },
+          "unit": "hertz"
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "id": 8,
       "title": "Substation Connection Status",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 7 },
-      "targets": [{ "format": "table", "rawSql": "SELECT CASE WHEN (SELECT value FROM sensor_readings WHERE metric='grid_status' ORDER BY ts DESC LIMIT 1)=1 THEN 'GRID SYNCHRONIZED' ELSE 'ISLAND MODE (OUTAGE)' END AS \"Status\";", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } } }
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 9
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT CASE WHEN (SELECT value FROM sensor_readings WHERE metric='grid_status' ORDER BY ts DESC LIMIT 1)=1 THEN 'GRID SYNCHRONIZED' ELSE 'ISLAND MODE (OUTAGE)' END AS \"Status\";",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          }
+        }
+      },
+      "datasource": "timescale"
     },
     {
       "id": 9,
       "title": "Battery SoC Dynamic Progression (%)",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 11 },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
       "targets": [
-        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value * 100 AS \"Battery SoC (%)\" FROM sensor_readings WHERE metric='soc' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "A" }
-      ]
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value * 100 AS \"Battery SoC (%)\" FROM sensor_readings WHERE metric='soc' AND $__timeFilter(ts) ORDER BY ts ASC;",
+          "refId": "A"
+        }
+      ],
+      "datasource": "timescale"
     }
   ],
   "refresh": "2s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["maems", "battery", "grid"],
-  "time": { "from": "now-15m", "to": "now" },
+  "tags": [
+    "maems",
+    "battery",
+    "grid"
+  ],
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
   "title": "3. MAEMS - Battery & Grid Diagnostics",
   "uid": "maems_battery_grid_v1"
 }

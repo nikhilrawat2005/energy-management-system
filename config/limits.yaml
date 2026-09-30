@@ -1,9 +1,18 @@
+# ---------------------------------------------------------------------------
+# MAEMS operating limits.
+# Every value below is actually read at runtime by:
+#   coordinator/safety.py, coordinator/coordinator.py, coordinator/baseline_rules.py,
+#   coordinator/rl_env.py, agents/*.py, ingestion/*, api/main.py
+# Change a number here and the whole stack (API, evaluation, dashboard) follows.
+# ---------------------------------------------------------------------------
+
 battery:
   capacity_kwh: 15.0
   max_charge_kw: 5.0
   max_discharge_kw: 5.0
   soc_min: 0.10          # 10% safety reserve
   soc_max: 0.95          # 95% overcharge prevention
+  soc_init: 0.50         # SoC used when a replay/seed run starts
   temp_max_c: 45.0       # Thermal throttling trigger
   temp_critical_c: 55.0  # Immediate shutdown trigger
   efficiency: 0.95
@@ -14,13 +23,35 @@ grid:
   freq_nominal: 50.0
   freq_tolerance_hz: 1.5       # 48.5Hz to 51.5Hz
   max_import_kw: 25.0
+  # Physics constants used for the grid->battery charging path.
+  pmax_kw: 5.0                 # battery inverter power rating
+  efficiency: 0.95
+  # Where the real inverter rating lives, so 0.95 is not confused with "95%".
+
+demand:
+  peak_threshold_kw: 6.0     # load above this is a peak / TOU risk
+  moderate_threshold_kw: 3.0  # load above this is "moderate"
+  spike_delta_kw: 2.0         # step change vs the 1h forecast that flags a spike
+
+solar:
+  peak_production_kw: 7.0     # inverter output considered "peak production"
+  night_hours: [0, 1, 2, 3, 4, 5, 19, 20, 21, 22, 23]
+  daytime_hours: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
 safety:
-  rate_limit_seconds: 900      # 15 minutes relay guard
+  # The dispatch period IS the relay guard: a control tick is sent at most
+  # once per rate_limit_seconds, which is also the integration step used for
+  # SoC, energy metering and cost accounting (15 min = 0.25 h).
+  rate_limit_seconds: 900
   island_mode_on_grid_loss: true
   shed_non_critical_load_on_island: true
+  # Grid-quality interlock: a reading outside the band above trips the inverter
+  # even when the utility reports "connected" (brown-out / generator running).
+  enforce_grid_quality: true
   blackout_penalty: 50.0
   battery_wear_cost_per_kwh: 0.02
+  curtailment_penalty_per_kwh: 0.50
+  solar_bonus_per_kwh: 0.10
 
 tariff:
   currency: "INR"
@@ -33,3 +64,9 @@ tariff:
   peak:
     hours: [18, 19, 20, 21]
     rate_per_kwh: 11.5
+
+coordinator:
+  mode: rule_based        # default dispatch mode: rule_based | rl
+  # Rule-based fallbacks (kept here so behaviour is config-driven, not hard-coded)
+  peak_discharge_soc_margin: 0.15   # keep a reserve before peak discharge
+  off_peak_charge_target_soc: 0.60  # stop grid charging above this SoC

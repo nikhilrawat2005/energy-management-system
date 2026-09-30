@@ -1,81 +1,390 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
   "id": null,
   "links": [
-    { "title": "⚡ Microgrid Overview", "url": "/d/maems_dashboard_v1/1-maems-executive-microgrid-overview", "type": "link", "targetBlank": false },
-    { "title": "🌤️ Weather & Forecasts", "url": "/d/maems_weather_v1/maems-weather-forecasting", "type": "link", "targetBlank": false },
-    { "title": "🔋 Battery & Grid Diagnostics", "url": "/d/maems_battery_grid_v1/maems-battery-grid-diagnostics", "type": "link", "targetBlank": false }
+    {
+      "title": "\u26a1 Microgrid Overview",
+      "url": "http://localhost:3001/d/maems_dashboard_v1/1-maems-executive-microgrid-overview",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    },
+    {
+      "title": "\ud83c\udf24\ufe0f Weather & Forecasts Page",
+      "url": "http://localhost:3001/d/maems_weather_v1/2-maems-weather-and-forecasting-intelligence",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    },
+    {
+      "title": "\ud83d\udd0b Battery & Grid Health Page",
+      "url": "http://localhost:3001/d/maems_battery_grid_v1/3-maems-battery-and-grid-diagnostics",
+      "type": "link",
+      "targetBlank": false,
+      "keepTime": true
+    }
   ],
   "liveNow": true,
   "panels": [
     {
+      "id": 999,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "html",
+        "content": "<div style=\"display: flex; align-items: center; background: #0d1117; padding: 10px 14px; border-radius: 8px; border: 1px solid #30363d; width: 100%; box-sizing: border-box;\"><a href=\"/d/maems_dashboard_v1/1-maems-executive-microgrid-overview\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\u26a1 1. Microgrid Overview</a><a href=\"/d/maems_weather_v1/2-maems-weather-and-forecasting-intelligence\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83c\udf24\ufe0f 2. Weather & Forecasts</a><a href=\"/d/maems_battery_grid_v1/3-maems-battery-and-grid-diagnostics\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-weight: normal; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83d\udd0b 3. Battery & Grid Diagnostics</a><a href=\"/d/maems_agents_v1/4-maems-multi-agent-decisions-and-safety-audit\" target=\"_self\" style=\"display: inline-block; padding: 7px 18px; margin-right: 12px; background-color: #1f6feb; border: 1px solid #388bfd; border-radius: 6px; color: #ffffff; font-weight: bold; text-decoration: none; font-size: 14px; font-family: Inter, Helvetica, Arial, sans-serif;\">\ud83e\udd16 4. Multi-Agent Decisions</a></div>"
+      },
+      "transparent": true
+    },
+    {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 2 },
       "id": 400,
-      "title": "🤖 Multi-Agent System Consensus & Health",
+      "title": "\ud83e\udd16 1. Multi-Agent Consensus & Instant Status",
       "type": "row"
     },
     {
       "id": 1,
-      "title": "☀️ Solar Agent Status",
+      "title": "\u2600\ufe0f Solar Agent Live Yield",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT 'ONLINE | ' || (SELECT value FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1) || ' kW Generation' AS \"Status\";", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } } }
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 3 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1;",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kW",
+          "decimals": 2,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "orange", "value": null },
+              { "color": "green", "value": 2.5 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "datasource": "timescale"
     },
     {
       "id": 2,
-      "title": "🔌 Demand Agent Status",
+      "title": "\ud83d\udd0c Demand Agent Site Load",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT 'ONLINE | ' || (SELECT value FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts DESC LIMIT 1) || ' kW Demand' AS \"Status\";", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "fixedColor": "blue", "mode": "fixed" } } }
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 3 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT value AS \"Load kW\" FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts DESC LIMIT 1;",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kW",
+          "decimals": 2,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "red", "value": 4.5 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "datasource": "timescale"
     },
     {
       "id": 3,
-      "title": "🔋 Battery Agent Status",
+      "title": "\ud83d\udd0b Battery Agent SoC",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT 'HEALTHY | ' || ROUND(((SELECT value FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1)*100)::numeric,1) || '% SoC' AS \"Status\";", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } } }
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 3 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT value AS \"SoC %\" FROM sensor_readings WHERE metric='soc_pct' ORDER BY ts DESC LIMIT 1;",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 20 },
+              { "color": "green", "value": 45 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "datasource": "timescale"
     },
     {
       "id": 4,
-      "title": "💰 Price Agent Status",
+      "title": "\ud83d\udcb0 Price Agent Tariff",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
-      "targets": [{ "format": "table", "rawSql": "SELECT 'ToD ACTIVE | ₹' || (SELECT value FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1) || '/kWh' AS \"Status\";", "refId": "A" }],
-      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } } }
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 3 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT value AS \"Tariff Rs/kWh\" FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1;",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyINR",
+          "decimals": 2,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 6 },
+              { "color": "red", "value": 9 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "datasource": "timescale"
     },
+
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
-      "id": 401,
-      "title": "📜 Real-Time Dispatch Log & Safety Interlock Audit Trail",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 },
+      "id": 402,
+      "title": "\ud83e\udd16 2. Local Ollama LLM Reasoning Engine (qwen2.5:1.5b)",
       "type": "row"
     },
     {
-      "id": 5,
-      "title": "Live Dispatch Decision Journal",
+      "id": 10,
+      "title": "\ud83e\udd14 Latest AI Strategic Analysis & Reasoning",
       "type": "table",
-      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 6 },
+      "description": "Real-time natural language reasoning produced by Ollama LLM analyzing the multi-agent consensus",
+      "gridPos": { "h": 8, "w": 15, "x": 0, "y": 8 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Time (UTC)\", action_name AS \"Coordinator Action\", reasoning AS \"Ollama Strategic Analysis & 4-Hour Outlook\" FROM ai_reasoning_log ORDER BY ts DESC LIMIT 1;",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Time (UTC)" }, "properties": [{ "id": "custom.width", "value": 110 }] },
+          { "matcher": { "id": "byName", "options": "Coordinator Action" }, "properties": [{ "id": "custom.width", "value": 240 }] },
+          { "matcher": { "id": "byName", "options": "Ollama Strategic Analysis & 4-Hour Outlook" }, "properties": [{ "id": "custom.displayMode", "value": "auto" }] }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      },
+      "datasource": "timescale"
+    },
+    {
+      "id": 11,
+      "title": "\ud83e\udd16 AI Engine Model",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 5, "x": 15, "y": 8 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT COALESCE((SELECT UPPER(source) || ' (' || model || ')' FROM ai_reasoning_log ORDER BY ts DESC LIMIT 1), 'STANDBY') AS \"Engine\";",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "green", "mode": "fixed" }
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "background"
+      },
+      "datasource": "timescale"
+    },
+    {
+      "id": 12,
+      "title": "\u23f1\ufe0f AI Latency (s)",
+      "type": "gauge",
+      "description": "LLM response generation latency in seconds",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 8 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT COALESCE((SELECT ROUND((latency_ms / 1000.0)::numeric, 1) FROM ai_reasoning_log ORDER BY ts DESC LIMIT 1), 0) AS \"Latency (s)\";",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 120,
+          "unit": "s",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 45 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      },
+      "datasource": "timescale",
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 13,
+      "title": "\ud83d\udcca Total AI Inferences",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 9, "x": 15, "y": 12 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT COUNT(*) AS \"Inferences\" FROM ai_reasoning_log;",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "blue", "mode": "fixed" }
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "colorMode": "background"
+      },
+      "datasource": "timescale"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 16 },
+      "id": 403,
+      "title": "\ud83d\udcc8 3. AI Real-Time Decision & Telemetry Dynamic Waveform",
+      "type": "row"
+    },
+    {
+      "id": 20,
+      "title": "\u26a1 Multi-Agent Telemetry Waveform: Generation vs Load vs Battery",
+      "type": "timeseries",
+      "description": "Continuous real-time stream of Solar Generation, Site Load, and Battery Power driving AI decisions",
+      "gridPos": { "h": 9, "w": 16, "x": 0, "y": 17 },
       "targets": [
         {
-          "format": "table",
-          "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Timestamp (UTC)\", action_name AS \"Coordinator Action (Dispatched)\", solar_kw AS \"Solar (kW)\", load_kw AS \"Load (kW)\", ROUND((soc * 100)::numeric, 1) || '%' AS \"Battery SoC\", '₹' || price AS \"Tariff (₹/kWh)\", safety_status AS \"Hardware Interlock Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 25;",
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Solar Generation (kW)\" FROM sensor_readings WHERE metric='solar_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
           "refId": "A"
+        },
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Site Load Demand (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
+          "refId": "B"
+        },
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Battery Net Flow (kW)\" FROM sensor_readings WHERE metric='bms_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
+          "refId": "C"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kW",
+          "decimals": 2,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 12,
+            "drawStyle": "line",
+            "spanNulls": true
+          }
+        }
+      },
+      "datasource": "timescale"
+    },
+    {
+      "id": 21,
+      "title": "\ud83e\udd16 AI Action Dispatch Frequency",
+      "type": "piechart",
+      "description": "Distribution of decisions dispatched by the Multi-Agent Coordinator",
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 17 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT action_name AS \"Action\", COUNT(*) AS \"Count\" FROM agent_decisions WHERE $__timeFilter(ts) GROUP BY action_name;",
+        "refId": "A"
+      }],
+      "datasource": "timescale"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
+      "id": 401,
+      "title": "\ud83d\udcdc 4. Audit Trail & Decision Journal",
+      "type": "row"
+    },
+    {
+      "id": 14,
+      "title": "\ud83d\udcdc Complete AI Reasoning Audit Log (Ollama LLM Decisions)",
+      "type": "table",
+      "description": "Historical audit of LLM explanations, SoC state, tariffs, and hardware safety confirmations",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 27 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Time (UTC)\", action_name AS \"Action Dispatched\", ROUND((soc*100)::numeric,1) || '%' AS \"SoC\", tariff_tier AS \"Tariff Tier\", UPPER(source) AS \"AI Source\", ROUND((latency_ms/1000.0)::numeric,1) || 's' AS \"Latency\", reasoning AS \"AI Reasoning & Outlook\" FROM ai_reasoning_log ORDER BY ts DESC LIMIT 50;",
+        "refId": "A"
+      }],
+      "fieldConfig": {
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "AI Reasoning & Outlook" }, "properties": [{ "id": "custom.width", "value": 750 }] },
+          { "matcher": { "id": "byName", "options": "AI Source" }, "properties": [{ "id": "custom.width", "value": 90 }] },
+          { "matcher": { "id": "byName", "options": "Time (UTC)" }, "properties": [{ "id": "custom.width", "value": 100 }] }
+        ]
+      },
+      "options": {
+        "sortBy": [{ "displayName": "Time (UTC)", "desc": true }]
+      },
+      "datasource": "timescale"
+    },
+    {
+      "id": 5,
+      "title": "\ud83d\udee1\ufe0f Hardware Safety Interlock & Decision Stream Journal",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 36 },
+      "targets": [{
+        "format": "table",
+        "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Timestamp (UTC)\", action_name AS \"Coordinator Action (Dispatched)\", solar_kw AS \"Solar (kW)\", load_kw AS \"Load (kW)\", ROUND((soc * 100)::numeric, 1) || '%' AS \"Battery SoC\", 'Rs.' || price AS \"Tariff (Rs./kWh)\", safety_status AS \"Hardware Interlock Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 25;",
+        "refId": "A"
+      }],
+      "datasource": "timescale"
     }
   ],
-  "refresh": "2s",
+  "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["maems", "agents", "safety"],
-  "time": { "from": "now-15m", "to": "now" },
+  "tags": ["maems", "agents", "safety", "ai", "ollama"],
+  "time": { "from": "now-30m", "to": "now" },
   "title": "4. MAEMS - Multi-Agent Decisions & Safety Audit",
   "uid": "maems_agents_v1"
 }
