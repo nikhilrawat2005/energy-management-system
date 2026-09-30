@@ -209,21 +209,15 @@
     {
       "id": 11,
       "title": "\ud83e\udd16 AI Engine Model",
-      "type": "stat",
+      "type": "table",
       "gridPos": { "h": 4, "w": 5, "x": 15, "y": 8 },
       "targets": [{
         "format": "table",
-        "rawSql": "SELECT COALESCE((SELECT UPPER(source) || ' (' || model || ')' FROM ai_reasoning_log ORDER BY ts DESC LIMIT 1), 'STANDBY') AS \"Engine\";",
+        "rawSql": "SELECT UPPER(source) || ' (' || model || ')' AS \"Active Engine\" FROM ai_reasoning_log ORDER BY ts DESC LIMIT 1;",
         "refId": "A"
       }],
-      "fieldConfig": {
-        "defaults": {
-          "color": { "fixedColor": "green", "mode": "fixed" }
-        }
-      },
       "options": {
-        "textMode": "value",
-        "colorMode": "background"
+        "showHeader": true
       },
       "datasource": "timescale"
     },
