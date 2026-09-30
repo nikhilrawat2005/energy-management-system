@@ -1,0 +1,88 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 2,
+  "id": null,
+  "links": [
+    { "title": "⚡ Microgrid Overview", "url": "/d/maems_dashboard_v1/1-maems-executive-microgrid-overview", "type": "link", "targetBlank": false },
+    { "title": "🔋 Battery & Grid Diagnostics", "url": "/d/maems_battery_grid_v1/maems-battery-grid-diagnostics", "type": "link", "targetBlank": false },
+    { "title": "🤖 Multi-Agent Decisions", "url": "/d/maems_agents_v1/maems-multi-agent-audit", "type": "link", "targetBlank": false }
+  ],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 200,
+      "title": "🌤️ Environmental & Meteorological Station Telemetry",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "title": "☀️ Solar Irradiance (Pyranometer)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Irradiance\" FROM sensor_readings WHERE metric='solar_irradiance' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "orange", "value": 300 }, { "color": "yellow", "value": 700 }] }, "unit": "W/m²" } }
+    },
+    {
+      "id": 2,
+      "title": "🌡️ Ambient Temp (DHT22 / PT100)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Ambient Temp\" FROM sensor_readings WHERE metric='ambient_temp_c' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 38 }] }, "unit": "celsius" } }
+    },
+    {
+      "id": 3,
+      "title": "💧 Relative Humidity (%RH)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Humidity\" FROM sensor_readings WHERE metric='humidity_pct' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 40 }] }, "unit": "percent" } }
+    },
+    {
+      "id": 4,
+      "title": "🌬️ Anemometer Wind Speed",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Wind Speed\" FROM sensor_readings WHERE metric='wind_speed_ms' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 15 }] }, "unit": "m/s" } }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 201,
+      "title": "🔮 Machine Learning 1-Hour Horizon Predictions vs Actuals",
+      "type": "row"
+    },
+    {
+      "id": 5,
+      "title": "☀️ Solar PV: Actual Generation vs ML Horizon Prediction (t+1h)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Solar Actual (kW)\" FROM sensor_readings WHERE metric='solar_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "A" },
+        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"ML Solar Forecast (kW)\" FROM sensor_readings WHERE metric='pred_solar_1h' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "B" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "🔌 Demand Load: Actual Load vs ML Horizon Prediction (t+1h)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Demand Actual (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "A" },
+        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"ML Demand Forecast (kW)\" FROM sensor_readings WHERE metric='pred_demand_1h' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "B" }
+      ]
+    }
+  ],
+  "refresh": "2s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["maems", "weather", "forecast"],
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "2. MAEMS - Weather & Forecasting Intelligence",
+  "uid": "maems_weather_v1"
+}

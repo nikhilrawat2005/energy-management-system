@@ -1,0 +1,97 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 2,
+  "id": null,
+  "links": [
+    { "title": "🌤️ Weather & Forecasts Page", "url": "/d/maems_weather_v1/maems-weather-forecasting", "type": "link", "targetBlank": false },
+    { "title": "🔋 Battery & Grid Health Page", "url": "/d/maems_battery_grid_v1/maems-battery-grid-diagnostics", "type": "link", "targetBlank": false },
+    { "title": "🤖 Multi-Agent Decisions Page", "url": "/d/maems_agents_v1/maems-multi-agent-audit", "type": "link", "targetBlank": false }
+  ],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "⚡ Microgrid Real-Time Overview & Economics",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "title": "☀️ Solar Generation",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }, { "color": "green", "value": 3 }] }, "unit": "kW" } }
+    },
+    {
+      "id": 2,
+      "title": "🔌 Microgrid Demand Load",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Load kW\" FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "red", "value": 5 }] }, "unit": "kW" } }
+    },
+    {
+      "id": 3,
+      "title": "🔋 Battery SoC",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value * 100 AS \"SoC %\" FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 20 }, { "color": "green", "value": 40 }] }, "unit": "percent" } }
+    },
+    {
+      "id": 4,
+      "title": "🏭 Grid Net Import",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Grid kW\" FROM sensor_readings WHERE metric='grid_power_kw' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 2 }, { "color": "red", "value": 4 }] }, "unit": "kW" } }
+    },
+    {
+      "id": 5,
+      "title": "💰 ToD Electricity Tariff",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Tariff\" FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 6 }, { "color": "red", "value": 10 }] }, "unit": "currencyINR" } }
+    },
+    {
+      "id": 6,
+      "title": "💸 Cumulative Cost Savings",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT value AS \"Savings\" FROM sensor_readings WHERE metric='total_savings_inr' ORDER BY ts DESC LIMIT 1;", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" }, "unit": "currencyINR" } }
+    },
+    {
+      "id": 7,
+      "title": "⚡ Live Power Balance: Solar Generation vs Demand Consumption (kW)",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 16, "x": 0, "y": 5 },
+      "targets": [
+        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Solar Generation (kW)\" FROM sensor_readings WHERE metric='solar_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "A" },
+        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Demand Consumption (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "B" },
+        { "format": "time_series", "rawSql": "SELECT ts AS \"time\", value AS \"Grid Import (kW)\" FROM sensor_readings WHERE metric='grid_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;", "refId": "C" }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "🤖 Real-Time Multi-Agent Dispatch Status",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 8, "x": 16, "y": 5 },
+      "targets": [
+        { "format": "table", "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Time (UTC)\", action_name AS \"Coordinator Action\", safety_status AS \"Safety Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 10;", "refId": "A" }
+      ]
+    }
+  ],
+  "refresh": "2s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["maems", "overview", "energy"],
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "1. MAEMS - Executive Microgrid Overview",
+  "uid": "maems_dashboard_v1"
+}

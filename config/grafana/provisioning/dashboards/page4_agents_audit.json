@@ -1,0 +1,81 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 2,
+  "id": null,
+  "links": [
+    { "title": "⚡ Microgrid Overview", "url": "/d/maems_dashboard_v1/1-maems-executive-microgrid-overview", "type": "link", "targetBlank": false },
+    { "title": "🌤️ Weather & Forecasts", "url": "/d/maems_weather_v1/maems-weather-forecasting", "type": "link", "targetBlank": false },
+    { "title": "🔋 Battery & Grid Diagnostics", "url": "/d/maems_battery_grid_v1/maems-battery-grid-diagnostics", "type": "link", "targetBlank": false }
+  ],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 400,
+      "title": "🤖 Multi-Agent System Consensus & Health",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "title": "☀️ Solar Agent Status",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT 'ONLINE | ' || (SELECT value FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1) || ' kW Generation' AS \"Status\";", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } } }
+    },
+    {
+      "id": 2,
+      "title": "🔌 Demand Agent Status",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT 'ONLINE | ' || (SELECT value FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts DESC LIMIT 1) || ' kW Demand' AS \"Status\";", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "blue", "mode": "fixed" } } }
+    },
+    {
+      "id": 3,
+      "title": "🔋 Battery Agent Status",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT 'HEALTHY | ' || ROUND(((SELECT value FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1)*100)::numeric,1) || '% SoC' AS \"Status\";", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } } }
+    },
+    {
+      "id": 4,
+      "title": "💰 Price Agent Status",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "targets": [{ "format": "table", "rawSql": "SELECT 'ToD ACTIVE | ₹' || (SELECT value FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1) || '/kWh' AS \"Status\";", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } } }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 401,
+      "title": "📜 Real-Time Dispatch Log & Safety Interlock Audit Trail",
+      "type": "row"
+    },
+    {
+      "id": 5,
+      "title": "Live Dispatch Decision Journal",
+      "type": "table",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Timestamp (UTC)\", action_name AS \"Coordinator Action (Dispatched)\", solar_kw AS \"Solar (kW)\", load_kw AS \"Load (kW)\", ROUND((soc * 100)::numeric, 1) || '%' AS \"Battery SoC\", '₹' || price AS \"Tariff (₹/kWh)\", safety_status AS \"Hardware Interlock Guard\" FROM agent_decisions ORDER BY ts DESC LIMIT 25;",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "2s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["maems", "agents", "safety"],
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "4. MAEMS - Multi-Agent Decisions & Safety Audit",
+  "uid": "maems_agents_v1"
+}
