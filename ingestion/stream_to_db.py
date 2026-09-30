@@ -4,7 +4,7 @@ import csv
 from datetime import datetime, timezone
 from coordinator.coordinator import MultiAgentCoordinator
 
-def stream_telemetry_to_timescale(dataset_path="data/dataset_15min.csv", host="localhost", port=5432):
+def stream_telemetry_to_timescale(dataset_path="data/dataset_15min.csv", host="localhost", port=5434):
     print(f"[DB Feeder] Connecting to TimescaleDB at {host}:{port}...")
     try:
         conn = psycopg2.connect(
