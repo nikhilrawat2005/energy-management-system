@@ -9,3 +9,9 @@ venv/
 *.log
 .DS_Store
 Thumbs.db
+
+# Large dataset raw files (>100MB exceeds GitHub push limit)
+data/data4cyber_dataset.zip
+data/raw_data4cyber/
+*.pcapng
+*.gz
