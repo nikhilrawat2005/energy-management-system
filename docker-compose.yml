@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # 1. Mosquitto MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: maems_mosquitto
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+
+  # 2. TimescaleDB (PostgreSQL for Time-Series telemetry)
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: maems_timescaledb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: maems_user
+      POSTGRES_PASSWORD: maems_password
+      POSTGRES_DB: maems_energy
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./ingestion/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # 3. Grafana (Real-time monitoring dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: maems_grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - timescaledb
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
+  timescaledb_data:
+  grafana_data:
