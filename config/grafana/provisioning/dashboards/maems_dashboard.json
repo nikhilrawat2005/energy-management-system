@@ -309,12 +309,12 @@
       "targets": [
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Solar Actual (kW)\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts ASC;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Solar Actual (kW)\" FROM sensor_readings WHERE metric='solar_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
           "refId": "A"
         },
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Demand Load (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' ORDER BY ts ASC;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Demand Load (kW)\" FROM sensor_readings WHERE metric='meter_power_kw' AND $__timeFilter(ts) ORDER BY ts ASC;",
           "refId": "B"
         }
       ]
@@ -327,12 +327,12 @@
       "targets": [
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"ML Solar Forecast 1h (kW)\" FROM sensor_readings WHERE metric='pred_solar_1h' ORDER BY ts ASC;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"ML Solar Forecast 1h (kW)\" FROM sensor_readings WHERE metric='pred_solar_1h' AND $__timeFilter(ts) ORDER BY ts ASC;",
           "refId": "A"
         },
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"ML Demand Forecast 1h (kW)\" FROM sensor_readings WHERE metric='pred_demand_1h' ORDER BY ts ASC;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"ML Demand Forecast 1h (kW)\" FROM sensor_readings WHERE metric='pred_demand_1h' AND $__timeFilter(ts) ORDER BY ts ASC;",
           "refId": "B"
         }
       ]
