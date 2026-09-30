@@ -23,14 +23,14 @@
       "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
       "targets": [
         {
-          "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1;",
+          "format": "table",
+          "rawSql": "SELECT value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1;",
           "refId": "A"
         }
       ],
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto"
       },
       "fieldConfig": {
@@ -54,14 +54,14 @@
       "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
       "targets": [
         {
-          "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Load kW\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts DESC LIMIT 1;",
+          "format": "table",
+          "rawSql": "SELECT value AS \"Load kW\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts DESC LIMIT 1;",
           "refId": "A"
         }
       ],
       "options": {
         "colorMode": "value",
-        "graphMode": "area"
+        "graphMode": "none"
       },
       "fieldConfig": {
         "defaults": {
@@ -84,8 +84,8 @@
       "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
       "targets": [
         {
-          "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value * 100 AS \"SoC %\" FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1;",
+          "format": "table",
+          "rawSql": "SELECT value * 100 AS \"SoC %\" FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1;",
           "refId": "A"
         }
       ],
@@ -112,8 +112,8 @@
       "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
       "targets": [
         {
-          "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Tariff\" FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1;",
+          "format": "table",
+          "rawSql": "SELECT value AS \"Tariff\" FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1;",
           "refId": "A"
         }
       ],
@@ -134,38 +134,34 @@
     },
     {
       "id": 5,
-      "title": "Solar vs Load Time-Series (kW)",
+      "title": "Solar vs Demand Load History (24 Hours)",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 6 },
+      "gridPos": { "h": 9, "w": 15, "x": 0, "y": 6 },
       "targets": [
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 100;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Solar Generation (kW)\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts ASC;",
           "refId": "A"
         },
         {
           "format": "time_series",
-          "rawSql": "SELECT ts AS \"time\", value AS \"Load kW\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts DESC LIMIT 100;",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Demand Load (kW)\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts ASC;",
           "refId": "B"
         }
       ]
     },
     {
       "id": 6,
-      "title": "Active Multi-Agent Decision",
-      "type": "stat",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+      "title": "Multi-Agent Coordinator Decision Logs",
+      "type": "table",
+      "gridPos": { "h": 9, "w": 9, "x": 15, "y": 6 },
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT action_name AS \"Coordinator Action\", safety_status AS \"Safety Status\" FROM agent_decisions ORDER BY ts DESC LIMIT 1;",
+          "rawSql": "SELECT to_char(ts, 'HH24:MI:SS') AS \"Time\", action_name AS \"Coordinator Action\", safety_status AS \"Safety\" FROM agent_decisions ORDER BY ts DESC LIMIT 15;",
           "refId": "A"
         }
-      ],
-      "options": {
-        "colorMode": "background",
-        "textMode": "auto"
-      }
+      ]
     }
   ],
   "refresh": "5s",
@@ -173,7 +169,7 @@
   "style": "dark",
   "tags": ["energy", "maems", "iot"],
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "title": "MAEMS - Multi-Agent Energy Management System",
