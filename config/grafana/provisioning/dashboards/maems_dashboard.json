@@ -1,0 +1,181 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "⚡ Real-Time Microgrid Power Flow",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "title": "Solar Generation (kW)",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "dark-orange", "value": null },
+              { "color": "green", "value": 3 }
+            ]
+          },
+          "unit": "kW"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Demand Load (kW)",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Load kW\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "red", "value": 6 }
+            ]
+          },
+          "unit": "kW"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Battery SoC (%)",
+      "type": "gauge",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value * 100 AS \"SoC %\" FROM sensor_readings WHERE metric='soc' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 20 },
+              { "color": "green", "value": 40 }
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Grid Electricity Tariff (₹/kWh)",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Tariff\" FROM sensor_readings WHERE metric='price' ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 6 },
+              { "color": "red", "value": 10 }
+            ]
+          },
+          "unit": "currencyINR"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Solar vs Load Time-Series (kW)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Solar kW\" FROM sensor_readings WHERE metric='solar_kw' ORDER BY ts DESC LIMIT 100;",
+          "refId": "A"
+        },
+        {
+          "format": "time_series",
+          "rawSql": "SELECT ts AS \"time\", value AS \"Load kW\" FROM sensor_readings WHERE metric='load_kw' ORDER BY ts DESC LIMIT 100;",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Active Multi-Agent Decision",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT action_name AS \"Coordinator Action\", safety_status AS \"Safety Status\" FROM agent_decisions ORDER BY ts DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "textMode": "auto"
+      }
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["energy", "maems", "iot"],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "title": "MAEMS - Multi-Agent Energy Management System",
+  "uid": "maems_dashboard_v1"
+}
