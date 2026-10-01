@@ -32,6 +32,23 @@ if _ROOT not in sys.path:
 
 from coordinator.coordinator import MultiAgentCoordinator
 
+# ── data paths ───────────────────────────────────────────────────────────────
+DATA_CSV_PATH = os.path.join(_ROOT, "data", "dataset_15min.csv")
+
+
+@st.cache_data
+def load_real_data() -> pd.DataFrame:
+    """Load the real 15-min interval dataset from data/dataset_15min.csv."""
+    df = pd.read_csv(DATA_CSV_PATH, parse_dates=["timestamp"])
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["date"] = df["timestamp"].dt.date
+    df["time_str"] = df["timestamp"].dt.strftime("%H:%M")
+    return df
+
+
+def data_csv_available() -> bool:
+    return os.path.exists(DATA_CSV_PATH)
+
 # ── page config ─────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="⚡ MAEMS — Energy Management",
@@ -218,7 +235,7 @@ def render_sidebar():
 
     page = st.sidebar.radio(
         "Navigation",
-        ["🏠 Live Control", "📊 Day Simulation", "🤖 Agent Inspector", "ℹ️ About"],
+        ["🏠 Live Control", "📊 Day Simulation", "📂 Real Data", "🤖 Agent Inspector", "ℹ️ About"],
         label_visibility="collapsed",
     )
 
@@ -513,13 +530,290 @@ All outputs validated before dispatch. Interlocks:
 Built with ❤️ using Python, FastAPI, Streamlit, Plotly
 """)
 
+# ═══════════════════════════════════════════════════════════════════════════
+#  PAGE 3 — REAL DATA EXPLORER
+# ═══════════════════════════════════════════════════════════════════════════
+def page_real_data(coord: MultiAgentCoordinator, mode: str):
+    st.title("📂 Real Data Explorer")
+    st.caption("30-day real 15-min interval dataset · Replay through the full agent pipeline")
 
-# ═══════════════════════════════════════════════════════════════════════════
-#  MAIN
-# ═══════════════════════════════════════════════════════════════════════════
+    # ── Data source selection ─────────────────────────────────────────────
+    data_source = st.radio(
+        "Data Source",
+        ["📁 Local CSV (dataset_15min.csv)", "⬆️ Upload your own CSV"],
+        horizontal=True,
+    )
+
+    df_raw = None
+
+    if data_source.startswith("📁"):
+        if data_csv_available():
+            df_raw = load_real_data()
+            st.success(f"✅ Loaded `data/dataset_15min.csv` — **{len(df_raw):,} rows**, {df_raw['date'].nunique()} days")
+        else:
+            st.warning("⚠️ `data/dataset_15min.csv` not found locally (hidden on Streamlit Cloud). Please upload a CSV below.")
+            data_source = "⬆️ Upload your own CSV"
+
+    if data_source.startswith("⬆️"):
+        uploaded = st.file_uploader(
+            "Upload a CSV with columns: timestamp, solar_kw, load_kw, soc (optional), price, irradiance_wm2, grid_voltage, grid_freq, grid_status, hour, batt_temp",
+            type=["csv"],
+        )
+        if uploaded:
+            df_raw = pd.read_csv(uploaded, parse_dates=["timestamp"])
+            df_raw["date"] = pd.to_datetime(df_raw["timestamp"]).dt.date
+            df_raw["time_str"] = pd.to_datetime(df_raw["timestamp"]).dt.strftime("%H:%M")
+            st.success(f"✅ Uploaded: **{len(df_raw):,} rows**")
+        else:
+            st.info("👆 Upload a CSV file to get started, or switch to Local CSV if running locally.")
+
+    if df_raw is None:
+        st.stop()
+
+    st.markdown("---")
+
+    # ── Dataset Overview ──────────────────────────────────────────────────
+    with st.expander("📋 Dataset Overview & Statistics", expanded=False):
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("**Column Info**")
+            info_df = pd.DataFrame({
+                "Column": df_raw.columns.tolist(),
+                "Type": [str(t) for t in df_raw.dtypes],
+                "Non-Null": df_raw.count().values,
+                "Sample": [str(df_raw[c].iloc[0]) for c in df_raw.columns],
+            })
+            st.dataframe(info_df, hide_index=True, use_container_width=True)
+        with col2:
+            st.markdown("**Numerical Statistics**")
+            num_cols = ["solar_kw", "load_kw", "price", "irradiance_wm2", "batt_temp"]
+            num_cols = [c for c in num_cols if c in df_raw.columns]
+            st.dataframe(df_raw[num_cols].describe().round(2), use_container_width=True)
+
+    # ── Date picker ───────────────────────────────────────────────────────
+    dates = sorted(df_raw["date"].unique())
+    st.subheader("🗓️ Select Day to Analyze")
+    col_date, col_mode = st.columns([3, 1])
+    with col_date:
+        selected_date = st.selectbox(
+            "Choose a date",
+            dates,
+            index=0,
+            format_func=lambda d: d.strftime("%A, %d %B %Y") if hasattr(d, "strftime") else str(d),
+        )
+    with col_mode:
+        replay_mode = st.selectbox("Dispatch Mode", ["rl", "rule_based"], index=0)
+
+    day_df = df_raw[df_raw["date"] == selected_date].copy().reset_index(drop=True)
+    st.markdown(f"**{len(day_df)} ticks** for {selected_date}  ·  15-min interval")
+
+    # ── KPI row for selected day ──────────────────────────────────────────
+    k1, k2, k3, k4, k5 = st.columns(5)
+    k1.metric("☀️ Peak Solar",        f"{day_df['solar_kw'].max():.2f} kW")
+    k2.metric("⚡ Peak Load",          f"{day_df['load_kw'].max():.2f} kW")
+    k3.metric("💰 Avg Tariff",         f"₹{day_df['price'].mean():.2f}/kWh")
+    k4.metric("🌡️ Max Irradiance",     f"{day_df['irradiance_wm2'].max():.0f} W/m²")
+    k5.metric("🌡️ Avg Batt Temp",      f"{day_df['batt_temp'].mean():.1f}°C")
+
+    # ── Raw power flow chart ──────────────────────────────────────────────
+    st.subheader("📈 Raw Telemetry — Power Flow")
+    fig_raw = go.Figure()
+    fig_raw.add_trace(go.Scatter(
+        x=day_df["time_str"], y=day_df["solar_kw"],
+        name="Solar (kW)", fill="tozeroy", line=dict(color="#f6c90e", width=2)
+    ))
+    fig_raw.add_trace(go.Scatter(
+        x=day_df["time_str"], y=day_df["load_kw"],
+        name="Load (kW)", line=dict(color="#f78166", width=2)
+    ))
+    surplus = (day_df["solar_kw"] - day_df["load_kw"]).clip(lower=0)
+    fig_raw.add_trace(go.Bar(
+        x=day_df["time_str"], y=surplus,
+        name="Surplus Solar", marker_color="rgba(246,201,14,0.25)"
+    ))
+    fig_raw.update_layout(
+        template="plotly_dark", barmode="overlay",
+        xaxis_title="Time", yaxis_title="kW",
+        legend=dict(orientation="h", y=1.02),
+        xaxis=dict(nticks=12)
+    )
+    st.plotly_chart(fig_raw, use_container_width=True)
+
+    # ── Weather & Tariff ──────────────────────────────────────────────────
+    col_l, col_r = st.columns(2)
+    with col_l:
+        fig_irr = go.Figure()
+        fig_irr.add_trace(go.Scatter(
+            x=day_df["time_str"], y=day_df["irradiance_wm2"],
+            fill="tozeroy", line=dict(color="#f6c90e", width=1.5), name="Irradiance W/m²"
+        ))
+        if "ambient_temp" in day_df.columns:
+            fig_irr.add_trace(go.Scatter(
+                x=day_df["time_str"], y=day_df["ambient_temp"],
+                line=dict(color="#f78166", width=1.5), name="Ambient Temp °C", yaxis="y2"
+            ))
+        fig_irr.update_layout(
+            title="Irradiance & Temperature", template="plotly_dark",
+            xaxis=dict(nticks=8), legend=dict(orientation="h")
+        )
+        st.plotly_chart(fig_irr, use_container_width=True)
+
+    with col_r:
+        fig_price = go.Figure()
+        fig_price.add_trace(go.Scatter(
+            x=day_df["time_str"], y=day_df["price"],
+            fill="tozeroy", line=dict(color="#bc8cff", width=2), name="Tariff (INR/kWh)"
+        ))
+        # Color zones
+        fig_price.add_hrect(y0=0, y1=6, fillcolor="rgba(63,185,80,0.08)", line_width=0, annotation_text="Off-Peak")
+        fig_price.add_hrect(y0=9, y1=20, fillcolor="rgba(248,81,73,0.08)", line_width=0, annotation_text="Peak")
+        fig_price.update_layout(
+            title="Time-of-Day Tariff", template="plotly_dark",
+            yaxis_title="INR/kWh", xaxis=dict(nticks=8)
+        )
+        st.plotly_chart(fig_price, use_container_width=True)
+
+    # ── Agent Replay ──────────────────────────────────────────────────────
+    st.markdown("---")
+    st.subheader("🤖 Agent Pipeline Replay on Real Data")
+    st.info(f"Feed each of the {len(day_df)} real ticks through the full MAEMS pipeline — agents → decision engine → safety interlock.")
+
+    if st.button(f"▶️  Replay {len(day_df)} ticks on Real Data", use_container_width=True, type="primary"):
+        progress = st.progress(0, text="Replaying ticks…")
+        results = []
+        soc = float(day_df.get("soc", pd.Series([0.5])).iloc[0]) if "soc" in day_df.columns else 0.5
+        batt_cap_kwh = 20.0
+
+        for i, row in day_df.iterrows():
+            # Build state from real CSV row
+            state = {
+                "solar_kw":       float(row.get("solar_kw", 0)),
+                "load_kw":        float(row.get("load_kw", 2)),
+                "soc":            round(max(0.1, min(0.95, soc)), 3),
+                "batt_temp":      float(row.get("batt_temp", 28)),
+                "price":          float(row.get("price", 7)),
+                "irradiance_wm2": float(row.get("irradiance_wm2", 400)),
+                "grid_voltage":   float(row.get("grid_voltage", 230)),
+                "grid_freq":      float(row.get("grid_freq", 50)),
+                "grid_status":    int(row.get("grid_status", 1)),
+                "hour":           float(row.get("hour", 12)),
+                "solar_fc_1h":    float(row.get("solar_fc_1h", row.get("solar_kw", 0))),
+                "load_fc_1h":     float(row.get("load_fc_1h",  row.get("load_kw", 2))),
+                "solar_fc_4h":    float(row.get("solar_fc_4h", row.get("solar_kw", 0))),
+                "load_fc_4h":     float(row.get("load_fc_4h",  row.get("load_kw", 2))),
+            }
+
+            result = coord.process_tick(state, mode=replay_mode, current_time_sec=state["hour"] * 3600)
+            action = result["final_action"]
+
+            # Update SoC based on dispatched action
+            solar, load = state["solar_kw"], state["load_kw"]
+            tick_h = 0.25  # 15-min interval
+            if action == 1:
+                soc = min(0.95, soc + (solar - load) * tick_h * 0.9 / batt_cap_kwh)
+            elif action == 2:
+                soc = max(0.10, soc - load * 0.5 * tick_h / batt_cap_kwh)
+            elif action == 3:
+                soc = min(0.95, soc + 2.0 * tick_h / batt_cap_kwh)
+
+            grid_import = max(0.0, load - solar) if action != 2 else 0.0
+            savings = grid_import * state["price"] * 0.35 / 100
+
+            results.append({
+                "time":           row.get("time_str", str(row.get("hour", i))),
+                "timestamp":      str(row.get("timestamp", "")),
+                "solar_kw":       state["solar_kw"],
+                "load_kw":        state["load_kw"],
+                "soc_pct":        round(soc * 100, 1),
+                "price":          state["price"],
+                "action_id":      action,
+                "action_name":    result["final_action_name"].split("(")[0].strip(),
+                "safety_status":  result["safety_status"],
+                "safety_override":result["safety_override"],
+                "grid_import_kw": round(grid_import, 2),
+                "savings_rs":     round(savings, 3),
+                "irradiance":     state["irradiance_wm2"],
+            })
+            progress.progress((i + 1) / len(day_df), text=f"Tick {i+1}/{len(day_df)} — {result['final_action_name'].split('(')[0].strip()}")
+
+        progress.empty()
+        res_df = pd.DataFrame(results)
+        st.session_state["replay_df"] = res_df
+        st.success(f"✅ Replay complete! {len(res_df)} ticks dispatched.")
+
+    res_df = st.session_state.get("replay_df")
+    if res_df is None:
+        return
+
+    # ── Replay Results ────────────────────────────────────────────────────
+    st.markdown("---")
+    st.subheader("📊 Replay Results")
+
+    r1, r2, r3, r4 = st.columns(4)
+    r1.metric("⚡ Grid Imported", f"{res_df['grid_import_kw'].sum() * 0.25:.1f} kWh")
+    r2.metric("💸 Est. Savings", f"₹{res_df['savings_rs'].sum():.2f}")
+    r3.metric("🔒 Safety Overrides", f"{res_df['safety_override'].sum()}")
+    r4.metric("🔋 Final SoC", f"{res_df['soc_pct'].iloc[-1]:.1f}%")
+
+    # Power + SoC chart
+    fig_replay = go.Figure()
+    fig_replay.add_trace(go.Scatter(x=res_df["time"], y=res_df["solar_kw"],
+                                    name="Solar (kW)", fill="tozeroy", line=dict(color="#f6c90e", width=1.5)))
+    fig_replay.add_trace(go.Scatter(x=res_df["time"], y=res_df["load_kw"],
+                                    name="Load (kW)", line=dict(color="#f78166", width=1.5)))
+    fig_replay.add_trace(go.Scatter(x=res_df["time"], y=res_df["soc_pct"],
+                                    name="SoC (%)", line=dict(color="#3fb950", width=2, dash="dot"), yaxis="y2"))
+    fig_replay.update_layout(
+        title="Real Data Replay — Power Flow & Battery SoC",
+        template="plotly_dark",
+        xaxis_title="Time", yaxis_title="kW",
+        yaxis2=dict(title="SoC (%)", overlaying="y", side="right", range=[0, 100]),
+        legend=dict(orientation="h", y=1.02),
+        xaxis=dict(nticks=12),
+    )
+    st.plotly_chart(fig_replay, use_container_width=True)
+
+    # Action distribution
+    col_pie, col_safe = st.columns(2)
+    with col_pie:
+        ac = res_df["action_name"].value_counts().reset_index()
+        ac.columns = ["Action", "Count"]
+        fig_pie = px.pie(ac, names="Action", values="Count", title="Action Distribution",
+                         color_discrete_sequence=["#f6c90e", "#3fb950", "#f78166", "#bc8cff"])
+        fig_pie.update_layout(template="plotly_dark")
+        st.plotly_chart(fig_pie, use_container_width=True)
+
+    with col_safe:
+        sf = res_df["safety_status"].value_counts().reset_index()
+        sf.columns = ["Status", "Count"]
+        fig_bar = px.bar(sf, x="Status", y="Count", title="Safety Status Distribution",
+                         color="Status",
+                         color_discrete_map={
+                             "SAFE_CONFIRMED": "#3fb950",
+                             "BATTERY_FULL": "#f6c90e",
+                             "BATTERY_DEPLETED": "#f78166",
+                             "THERMAL_LOCKOUT": "#f85149",
+                         })
+        fig_bar.update_layout(template="plotly_dark", showlegend=False)
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+    # Raw table + download
+    with st.expander("📄 View Full Replay Data Table"):
+        st.dataframe(res_df, hide_index=True, use_container_width=True)
+        csv = res_df.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            f"⬇️ Download Replay Results ({selected_date})",
+            csv,
+            f"maems_replay_{selected_date}.csv",
+            "text/csv",
+            use_container_width=True,
+        )
+
+
+
 def main():
     # init session state
-    for key in ["last_result", "last_state", "sim_df"]:
+    for key in ["last_result", "last_state", "sim_df", "replay_df"]:
         if key not in st.session_state:
             st.session_state[key] = None
 
@@ -530,6 +824,8 @@ def main():
         page_live_control(coord, mode)
     elif page == "📊 Day Simulation":
         page_day_simulation(coord, mode, sim_steps)
+    elif page == "📂 Real Data":
+        page_real_data(coord, mode)
     elif page == "🤖 Agent Inspector":
         page_agent_inspector(coord)
     elif page == "ℹ️ About":
