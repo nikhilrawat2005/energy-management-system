@@ -1,0 +1,15 @@
+# Streamlit Cloud requirements
+# Only the packages needed for the Streamlit dashboard (no Docker, no DB, no MQTT)
+# These are the cloud-safe deps — the full stack is in requirements.txt
+
+streamlit==1.38.0
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+plotly==5.24.1
+pandas==2.2.3
+numpy==1.26.4
+scikit-learn==1.5.2
+gymnasium==0.29.1
+PyYAML==6.0.2
+requests==2.32.3

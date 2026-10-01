@@ -1,17 +1,47 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 *.pyo
 *.pyd
 .Python
+
+# Virtual environments
 env/
 venv/
 .venv/
+ENV/
+
+# Logs
 *.log
+logs/
+
+# OS artifacts
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Streamlit
+.streamlit/secrets.toml
 
 # Large dataset raw files (>100MB exceeds GitHub push limit)
 data/data4cyber_dataset.zip
 data/raw_data4cyber/
 *.pcapng
 *.gz
+*.zip
+
+# Docker volumes (local only)
+grafana_data/
+timescaledb_data/
